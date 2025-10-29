@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro GPS - ENACAL_APP</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(rgba(0,0,64,0.6), rgba(0,0,64,0.6)),
+        url("images/manos.jpg");
+      background-size: cover;
+      background-position: center;
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar izquierdo - Escritorio */
+    .sidebar {
+      width: 220px;
+      background-color: #003366;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    .sidebar .logo-sidebar {
+      width: 120px;
+      margin-bottom: 30px;
+    }
+
+    .sidebar .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      width: 85%;
+      text-align: center;
+    }
+
+    .sidebar .user-icon {
+      width: 50px;
+      height: auto;
+      border-radius: 50%;
+    }
+
+    .sidebar .logout-btn,
+    .sidebar .back-btn,
+    .sidebar .history-btn {
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .sidebar .logout-btn {
+      background: #FF4C4C;
+    }
+
+    .sidebar .logout-btn:hover {
+      background: #c0392b;
+    }
+
+    .sidebar .back-btn {
+      background: #4A90E2;
+      margin-top: 10px;
+    }
+
+    .sidebar .back-btn:hover {
+      background: #357ABD;
+    }
+
+    /* ✅ Botón de historial en escritorio */
+    .sidebar .history-btn {
+      background: #28a745;
+      margin-top: 10px;
+    }
+
+    .sidebar .history-btn:hover {
+      background: #218838;
+    }
+
+    /* Contenido principal */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .container {
+      background: rgba(73, 99, 160, 0.4);
+      padding: 30px;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 900px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      text-align: center;
+      margin: 30px auto 0 auto;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .logo {
+      width: 60px;
+      height: auto;
+    }
+
+    h1 {
+      color: #f6f7f8;
+      margin-bottom: 15px;
+    }
+
+    h3 {
+      color: #f2f53e;
+      margin-bottom: 20px;
+    }
+
+    #map {
+      height: 300px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    label {
+      color: #fff;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .form-evidencias {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .form-evidencias .info {
+      flex: 1;
+      color: #f6f7f8;
+      font-size: 13px;
+      text-align: left;
+      background: rgba(0,0,0,0.2);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 12px 20px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    footer {
+      width: 100%;
+      text-align: center;
+      color: white;
+      padding: 15px 0;
+      font-size: 14px;
+      margin-top: auto;
+    }
+
+    footer a {
+      color: #66b2ff;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 500px;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .modal-content h2 {
+      color: green;
+    }
+
+    .modal-content p {
+      color: #333;
+      margin: 8px 0;
+    }
+
+    .modal-buttons {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .modal-buttons button {
+      background: #007BFF;
+    }
+
+    .modal-buttons button:hover {
+      background: #0056b3;
+    }
+
+    /* ✅ Responsivo: diseño tipo app móvil */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        padding-top: 60px;
+        box-sizing: border-box;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 60px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 15px;
+        background-color: #003366;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+      }
+
+      .main-content {
+        width: 100%;
+        padding: 0 15px;
+        box-sizing: border-box;
+      }
+
+      .sidebar .logo-sidebar {
+        width: 80px;
+        margin: 0;
+        order: 1;
+      }
+
+      .sidebar .user-info {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        background: transparent;
+        padding: 0;
+        width: auto;
+        order: 2;
+      }
+
+      .sidebar .user-icon {
+        width: 28px;
+        order: 2;
+      }
+
+      /* ✅ Nombre de usuario SIEMPRE visible */
+      .sidebar #userName {
+        font-size: 13px;
+        font-weight: bold;
+        color: white;
+        display: inline;
+        order: 3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100px;
+      }
+
+      .sidebar .logout-btn {
+        background: #FF4C4C;
+        padding: 6px 10px;
+        font-size: 12px;
+        height: 28px;
+        min-width: 60px;
+        order: 4;
+      }
+
+      .sidebar .logout-btn:hover {
+        background: #e03e3e;
+      }
+
+      /* ✅ Botón de historial en móvil: solo ícono */
+      .sidebar .history-btn {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 22px;
+        width: auto;
+        padding: 0;
+        margin: 0;
+        order: 1;
+        text-indent: -9999px;
+        position: relative;
+      }
+
+      .sidebar .history-btn::before {
+        content: "📋";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-indent: 0;
+      }
+
+      .sidebar .history-btn:hover {
+        transform: scale(1.2);
+      }
+
+      .sidebar .back-btn {
+        display: none;
+      }
+
+      .container {
+        margin-top: 20px;
+        width: 90%;
+        max-width: 500px;
+        padding: 20px;
+      }
+
+      #map {
+        height: 250px;
+      }
+
+      .form-evidencias {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <img src="images/logo.png" alt="Logo ENACAL_APP" class="logo-sidebar">
+    <div class="user-info">
+      <button class="history-btn" onclick="window.location.href='resumen.html';">Historial</button>
+      <img src="images/user.png" alt="Usuario" class="user-icon">
+      <span id="userName">Juan Pérez</span>
+      <button class="logout-btn" onclick="window.location.href='login.html';">Cerrar sesión</button>
+      <button class="back-btn" onclick="window.location.href='inicio.html';">Volver a Inicio</button>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <div class="container">
+      <div class="header">
+        <img src="images/logo2.png" alt="Logo ENACAL_APP" class="logo">
+        <h1>REPORTE GPS</h1>
+      </div>
+
+      <h3 id="tipoAveriaTitulo">Ubicación en tiempo real</h3>
+
+      <form id="gpsForm">
+        <div class="form-group">
+          <label>Mi ubicación:</label>
+          <div id="map"></div>
+          <input type="hidden" id="latitud" name="latitud">
+          <input type="hidden" id="longitud" name="longitud">
+        </div>
+
+        <div class="form-group">
+          <label for="direccion">Dirección exacta</label>
+          <textarea id="direccion" name="direccion" placeholder="Ingresa dirección exacta"></textarea>
+        </div>
+
+        <div class="form-evidencias">
+          <div>
+            <label for="evidencias">Subir evidencias</label>
+            <input type="file" id="evidencias" name="evidencias" multiple accept="image/png, image/jpeg, video/mp4">
+          </div>
+          <div class="info">
+            - Puede subir imágenes JPG / PNG.<br>
+            - Puede subir videos MP4 (máximo 2 minutos).<br>
+          </div>
+        </div>
+
+        <button type="submit">Enviar Reporte</button>
+      </form>
+    </div>
+
+    <footer>
+      <p>© Proyecto ENACAL_APP | UNCSM - IS321</p>
+      <p>Diseño de Aplicaciones WEB | Ingeniería en Sistemas de la Información | 2025</p>
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content" id="comprobante">
+      <h2>✔ Envío Exitoso</h2>
+      <div id="resumenDatos"></div>
+      <div class="modal-buttons">
+        <button onclick="window.print()">Imprimir / Guardar PDF</button>
+        <button onclick="document.getElementById('successModal').style.display='none'">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        const primerNombre = user.nombre1;
+        const primerApellido = user.apellido1;
+        document.getElementById("userName").innerText = `${primerNombre} ${primerApellido}`;
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+  <script>
+    // Obtener parámetro tipo de avería de la URL
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+    let tipoAveria = getQueryParam("tipo");
+
+    // Mapeo de URL → ENUM MySQL
+    if (tipoAveria === "agua_potable") tipoAveria = "Agua Potable";
+    if (tipoAveria === "aguas_negras") tipoAveria = "Aguas Negras";
+
+    if (tipoAveria) {
+      document.getElementById("tipoAveriaTitulo").innerText =
+        "Ubicación en tiempo real - " + tipoAveria;
+    }
+
+    // Inicializar mapa
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          document.getElementById("latitud").value = lat;
+          document.getElementById("longitud").value = lon;
+
+          const map = L.map("map").setView([lat, lon], 15);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap contributors",
+          }).addTo(map);
+
+          L.marker([lat, lon])
+            .addTo(map)
+            .bindPopup("Tu ubicación actual")
+            .openPopup();
+        },
+        () => {
+          alert("No se pudo obtener la ubicación. Activa el GPS.");
+        }
+      );
+    }
+
+    // Para el envío del formulario
+    document.getElementById("gpsForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const lat = document.getElementById("latitud").value;
+      const lon = document.getElementById("longitud").value;
+      const direccion = document.getElementById("direccion").value;
+      const evidencias = document.getElementById("evidencias").files;
+
+      // Obtener el usuario desde localStorage
+      const user = JSON.parse(localStorage.getItem("user"));
+      const id_usuario = user ? user.id_usuario : null;
+
+      let tipoAveria = getQueryParam("tipo");
+
+      // Mapeo a ENUM de MySQL
+      if (tipoAveria === "agua_potable") tipoAveria = "Agua Potable";
+      if (tipoAveria === "aguas_negras") tipoAveria = "Aguas Negras";
+
+      const formData = new FormData();
+      formData.append("latitud", lat);
+      formData.append("longitud", lon);
+      formData.append("direccion", direccion);
+      formData.append("tipo_averia", tipoAveria);
+      formData.append("id_usuario", id_usuario);
+
+      for (let i = 0; i < evidencias.length; i++) {
+        formData.append("evidencias", evidencias[i]);
+      }
+
+      try {
+        const res = await fetch("/api/averias/gps", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+
+        const resumen = `
+          <p><strong>Número de Reporte:</strong> ${data.id_formateado}</p>
+          <p><strong>Reportado por:</strong> ${data.usuario_nombre || "Desconocido"} ${data.usuario_apellido || ""}</p>      
+          <p><strong>Tipo de Avería:</strong> ${data.tipo_averia}</p>
+          <p><strong>Latitud:</strong> ${data.latitud}</p>
+          <p><strong>Longitud:</strong> ${data.longitud}</p>
+          <p><strong>Dirección:</strong> ${data.direccion}</p>
+          <p><strong>Evidencia:</strong> ${data.evidencia || "Ninguna"}</p>
+        `;
+
+        document.getElementById("resumenDatos").innerHTML = resumen;
+        document.getElementById("successModal").style.display = "flex";
+      } catch (error) {
+        alert("Error al registrar avería GPS: " + error);
+      }
+    });
+  </script>
+</body>
+</html>

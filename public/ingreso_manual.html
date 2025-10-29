@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ingreso Manual - ENACAL_APP</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(rgba(0,0,64,0.6), rgba(0,0,64,0.6)), url("images/manos.jpg");
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar izquierdo - Escritorio */
+  .sidebar {
+    width: 220px;
+    background-color: #003366;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    z-index: 10;
+  }
+
+  .sidebar .logo-sidebar {
+    width: 120px;
+    margin-bottom: 30px;
+  }
+
+  .sidebar .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    width: 85%;
+    text-align: center;
+  }
+
+  .sidebar .user-icon {
+    width: 50px;
+    height: auto;
+    border-radius: 50%;
+  }
+
+  .sidebar .logout-btn,
+  .sidebar .back-btn,
+  .sidebar .history-btn {
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .sidebar .logout-btn {
+    background: #FF4C4C;
+  }
+
+  .sidebar .logout-btn:hover {
+    background: #c0392b;
+  }
+
+  .sidebar .back-btn {
+    background: #4A90E2;
+    margin-top: 10px;
+  }
+
+  .sidebar .back-btn:hover {
+    background: #357ABD;
+  }
+
+  /* ✅ Botón de historial en escritorio */
+  .sidebar .history-btn {
+    background: #28a745;
+    margin-top: 10px;
+  }
+
+  .sidebar .history-btn:hover {
+    background: #218838;
+  }
+
+  /* Contenido principal */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .container {
+    background: rgba(73, 99, 160, 0.4);
+    padding: 40px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 780px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    text-align: center;
+    margin: 30px auto 20px auto;
+    box-sizing: border-box;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .logo {
+    width: 60px;
+    height: auto;
+  }
+
+  h1 {
+    color: #f6f7f8;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+  }
+
+  h3 {
+    color: #f2f53e;
+    margin-bottom: 25px;
+    font-size: 1.2rem;
+  }
+
+  form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px;
+    text-align: left;
+  }
+
+  label {
+    color: #fff;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  select, input, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+
+  .direccion-input {
+    height: 100px;
+    resize: none;
+  }
+
+  .form-full {
+    grid-column: span 2;
+  }
+
+  .evidencias-container {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    align-items: start;
+  }
+
+  .evidencias-info {
+    color: #fff;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .form-actions {
+    grid-column: span 2;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  button {
+    padding: 12px 20px;
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 50%;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  footer {
+    width: 100%;
+    text-align: center;
+    color: white;
+    padding: 15px 0;
+    font-size: 0.9rem;
+    margin-top: auto;
+  }
+
+  footer a {
+    color: #66b2ff;
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    text-decoration: underline;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 90%;
+    width: 500px;
+  }
+
+  .checkmark {
+    font-size: 2rem;
+    color: green;
+    margin-bottom: 10px;
+  }
+
+  .modal-content h2 {
+    color: green;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .close-btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    background: #007BFF;
+  }
+
+  .close-btn:hover {
+    background: #0056b3;
+  }
+
+  /* ✅ Responsivo: diseño tipo app móvil */
+  @media (max-width: 768px) {
+    body {
+      flex-direction: column;
+      padding-top: 60px;
+      box-sizing: border-box;
+    }
+
+    .sidebar {
+      width: 100%;
+      height: 60px;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+      background-color: #003366;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .main-content {
+      width: 100%;
+      padding: 0 15px;
+      box-sizing: border-box;
+    }
+
+    .sidebar .logo-sidebar {
+      width: 80px;
+      margin: 0;
+      order: 1;
+    }
+
+    .sidebar .user-info {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      padding: 0;
+      width: auto;
+      order: 2;
+    }
+
+    .sidebar .user-icon {
+      width: 28px;
+      order: 2;
+    }
+
+    /* ✅ Nombre de usuario SIEMPRE visible */
+    .sidebar #userName {
+      font-size: 13px;
+      font-weight: bold;
+      color: white;
+      display: inline;
+      order: 3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100px;
+    }
+
+    .sidebar .logout-btn {
+      background: #FF4C4C;
+      padding: 6px 10px;
+      font-size: 12px;
+      height: 28px;
+      min-width: 60px;
+      order: 4;
+    }
+
+    .sidebar .logout-btn:hover {
+      background: #e03e3e;
+    }
+
+    /* ✅ Botón de historial en móvil: solo ícono */
+    .sidebar .history-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 22px;
+      width: auto;
+      padding: 0;
+      margin: 0;
+      order: 1;
+      text-indent: -9999px;
+      position: relative;
+    }
+
+    .sidebar .history-btn::before {
+      content: "📋";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-indent: 0;
+    }
+
+    .sidebar .history-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .sidebar .back-btn {
+      display: none;
+    }
+
+    .container {
+      margin-top: 20px;
+      padding: 20px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .form-full,
+    .evidencias-container {
+      width: 100%;
+      grid-column: auto;
+    }
+
+    .evidencias-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: stretch;
+    }
+
+    button {
+      width: 100%;
+      max-width: 300px;
+    }
+
+    select, input, textarea {
+      font-size: 0.9rem;
+      padding: 8px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      margin-top: 15px;
+      padding: 15px;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+    }
+
+    h3 {
+      font-size: 0.9rem;
+    }
+
+    .direccion-input {
+      height: 80px;
+    }
+
+    button {
+      font-size: 0.85rem;
+      padding: 8px;
+    }
+
+    .modal-content {
+      width: 90%;
+      padding: 15px;
+    }
+
+    .modal-content h2 {
+      font-size: 1.2rem;
+    }
+
+    .checkmark {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <img src="images/logo.png" alt="Logo ENACAL_APP" class="logo-sidebar">
+    <div class="user-info">
+      <button class="history-btn" onclick="window.location.href='resumen.html';">Historial</button>
+      <img src="images/user.png" alt="Usuario" class="user-icon">
+      <span id="userName">Juan Pérez</span>
+      <button class="logout-btn" onclick="window.location.href='login.html';">Cerrar sesión</button>
+      <button class="back-btn" onclick="window.location.href='inicio.html';">Volver a Inicio</button>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <div class="container">
+      <div class="header">
+        <img src="images/logo2.png" alt="Logo ENACAL_APP" class="logo">
+        <h1>INGRESO MANUAL</h1>
+      </div>
+
+      <form id="manualForm">
+        <div>
+          <label for="departamento">Departamento</label>
+          <select id="departamento" name="departamento" required>
+            <option value="" disabled selected>Selecciona Departamento</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="municipio">Municipio</label>
+          <select id="municipio" name="municipio" required>
+            <option value="" disabled selected>Selecciona Municipio</option>
+          </select>
+        </div>
+
+        <div id="distritoContainer" style="display:none;">
+          <label for="distrito">Distrito</label>
+          <select id="distrito" name="distrito">
+            <option value="" disabled selected>Selecciona un Distrito</option>
+          </select>
+        </div>
+
+        <div id="barrioContainer">
+          <label for="barrio">Barrio</label>
+          <input type="text" id="barrio" name="barrio" placeholder="Nombre del barrio" required>
+        </div>
+
+        <div id="comarcaContainer" style="display:none;">
+          <label for="comarca">Comarca</label>
+          <input type="text" id="comarca" name="comarca" placeholder="Nombre de la comarca">
+        </div>
+
+        <div class="form-full">
+          <label for="direccion">Dirección</label>
+          <textarea id="direccion" name="direccion" class="direccion-input" placeholder="Dirección exacta" required></textarea>
+        </div>
+
+        <div class="evidencias-container">
+          <div>
+            <label for="evidencias">Subir evidencias</label>
+            <input type="file" id="evidencias" name="evidencias[]" accept="image/*,video/*" multiple>
+          </div>
+          <div class="evidencias-info">
+            - Imágenes: JPG / PNG<br>
+            - Videos: MP4, máximo 2 minutos
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit">Enviar Reporte</button>
+        </div>
+      </form>
+    </div>
+
+    <footer>
+      <p>© Proyecto ENACAL_APP | UNCSM - IS321</p>
+      <p>Diseño de Aplicaciones WEB | Ingeniería en Sistemas de la Información | 2025</p>
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="successModal">
+    <div class="modal-content">
+      <div class="checkmark">✔</div>
+      <h2>¡Envío Exitoso!</h2>
+      <div id="resumenDatos"></div>
+      <div class="modal-actions">
+        <button class="close-btn" onclick="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        const primerNombre = user.nombre1;
+        const primerApellido = user.apellido1;
+        document.getElementById("userName").innerText = `${primerNombre} ${primerApellido}`;
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+  <script>
+    async function cargarDepartamentos() {
+      const res = await fetch('/departamentos');
+      const data = await res.json();
+      const select = document.getElementById('departamento');
+      data.forEach(dep => {
+        const option = document.createElement('option');
+        option.value = dep.id_departamento;
+        option.textContent = dep.nombre;
+        select.appendChild(option);
+      });
+    }
+
+    document.getElementById('departamento').addEventListener('change', async (e) => {
+      const idDep = e.target.value;
+      const res = await fetch(`/municipios/${idDep}`);
+      const data = await res.json();
+      const municipioSel = document.getElementById('municipio');
+      municipioSel.innerHTML = '<option value="" disabled selected>Selecciona Municipio</option>';
+      data.forEach(mun => {
+        const option = document.createElement('option');
+        option.value = mun.id_municipio;
+        option.textContent = mun.nombre;
+        municipioSel.appendChild(option);
+      });
+
+      document.getElementById('distritoContainer').style.display = 'none';
+      document.getElementById('comarcaContainer').style.display = 'none';
+      document.getElementById('distrito').innerHTML = '<option value="" disabled selected>Selecciona un Distrito</option>';
+      document.getElementById('comarca').value = '';
+    });
+
+    document.getElementById('municipio').addEventListener('change', async (e) => {
+      const select = e.target;
+      const munText = select.options[select.selectedIndex].text;
+      const idMun = select.value;
+
+      if (munText === "Managua") {
+        document.getElementById('distritoContainer').style.display = "block";
+        document.getElementById('comarcaContainer').style.display = "none";
+        const res = await fetch(`/distritos/${idMun}`);
+        const data = await res.json();
+        const distritoSel = document.getElementById('distrito');
+        distritoSel.innerHTML = '<option value="" disabled selected>Selecciona Distrito</option>';
+        data.forEach(dis => {
+          const option = document.createElement('option');
+          option.value = dis.id_distrito;
+          option.textContent = dis.nombre;
+          distritoSel.appendChild(option);
+        });
+      } else {
+        document.getElementById('distritoContainer').style.display = "none";
+        document.getElementById('comarcaContainer').style.display = "block";
+        document.getElementById('distrito').innerHTML = '<option value="" disabled selected>Selecciona Distrito</option>';
+      }
+    });
+
+    cargarDepartamentos();
+
+    const form = document.getElementById("manualForm");
+    const modal = document.getElementById("successModal");
+    const resumen = document.getElementById("resumenDatos");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const user = JSON.parse(localStorage.getItem("user"));
+      const id_usuario = user ? user.id_usuario : null;
+      const departamento = document.getElementById("departamento").value;
+      const municipio = document.getElementById("municipio").value;
+      const distrito = document.getElementById("distrito").value;
+      const barrio = document.getElementById("barrio").value;
+      const comarca = document.getElementById("comarca").value;
+      const direccion = document.getElementById("direccion").value;
+      const evidencias = document.getElementById("evidencias").files;
+
+      const formData = new FormData();
+      
+      formData.append("departamento", departamento);
+      formData.append("municipio", municipio);
+      formData.append("distrito", distrito);
+      formData.append("barrio", barrio);
+      formData.append("comarca", comarca);
+      formData.append("direccion", direccion);
+      formData.append("id_usuario", id_usuario);
+
+      for (let i = 0; i < evidencias.length; i++) {
+        formData.append("evidencias", evidencias[i]);
+      }
+
+      try {
+        const res = await fetch("/api/averias", { method: "POST", body: formData });
+        const data = await res.json();
+
+        resumen.innerHTML = `
+          <p><strong>Registrado por:</strong> ${data.usuario_nombre || '---'} ${data.usuario_apellido || ''}</p>
+          <p><strong>Número de Reporte:</strong> ${data.id_formateado}</p>
+          <p><strong>Departamento:</strong> ${data.departamento_nombre || 'N/A'}</p>
+          <p><strong>Municipio:</strong> ${data.municipio_nombre || 'N/A'}</p>
+          <p><strong>Distrito:</strong> ${data.distrito_nombre || 'N/A'}</p>
+          <p><strong>Barrio:</strong> ${barrio}</p>
+          <p><strong>Comarca:</strong> ${comarca || 'N/A'}</p>
+          <p><strong>Dirección:</strong> ${direccion}</p>
+        `;
+
+        modal.style.display = "flex";
+      } catch (error) {
+        alert("Error enviando el reporte: " + error);
+      }
+    });
+
+    function closeModal() { 
+      modal.style.display = "none"; 
+    }
+  </script>
+
+</body>
+</html>

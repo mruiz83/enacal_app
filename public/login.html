@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - ENACAL_APP</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background:
+        linear-gradient(rgba(0,0,64,0.7), rgba(0,0,64,0.7)),
+        url("images/manos.jpg");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* 👈 Evita que el teclado cubra el formulario en móviles */
+      min-height: 100vh;
+      padding: 40px 20px 20px; /* 👈 Más espacio arriba en móvil */
+      margin: 0;
+      color: #fff;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px); /* ✨ Efecto vidrio (opcional, moderno) */
+      padding: 32px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      width: 140px;
+      height: auto;
+      display: block;
+      margin: 0 auto 24px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+
+    .login-container h2 {
+      margin-bottom: 28px;
+      color: #f2f53e;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #66b2ff;
+      font-size: 18px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 16px 16px 16px 48px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+      font-size: 16px;
+      color: white;
+      caret-color: #66b2ff;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #66b2ff;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .input-group input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      margin-top: 8px;
+    }
+
+    button:hover {
+      background: #0069d9;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .footer {
+      margin-top: 24px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .footer a {
+      color: #f2f53e;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ✅ Optimización para móviles pequeños */
+    @media (max-width: 360px) {
+      body {
+        padding: 30px 16px 16px;
+      }
+
+      .login-container {
+        padding: 28px;
+      }
+
+      .input-group input {
+        padding: 15px 16px 15px 48px;
+        font-size: 16px;
+      }
+
+      button {
+        padding: 15px;
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <img src="images/logo.png" alt="Logo ENACAL_APP" class="logo">
+    <h2>Iniciar Sesión</h2>
+
+    <form id="loginForm">
+      <div class="input-group">
+        <i class="fa fa-user"></i>
+        <input type="text" id="usuario" placeholder="Correo o Número NIC" required autocomplete="username">
+      </div>
+      <div class="input-group">
+        <i class="fa fa-lock"></i>
+        <input type="password" id="password" placeholder="Contraseña" required autocomplete="current-password">
+      </div>
+      <button type="submit">Ingresar</button>
+    </form>
+
+    <div class="footer">
+      <p>¿No tienes cuenta? <a href="registro.html">Regístrate aquí</a></p>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const usuario = document.getElementById('usuario').value.trim();
+      const contrasena = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario, contrasena })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          // ✅ Mejor que alert(): más profesional
+          localStorage.setItem('user', JSON.stringify(data.user));
+          window.location.href = 'inicio.html';
+        } else {
+          alert('❌ ' + data.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('❌ Error al intentar iniciar sesión');
+      }
+    });
+  </script>
+
+</body>
+</html>

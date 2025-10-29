@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bienvenido - ENACAL_APP</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background:
+      linear-gradient(rgba(0,0,64,0.6), rgba(0,0,64,0.6)),
+      url("images/manos.jpg");
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar izquierdo - Escritorio */
+  .sidebar {
+    width: 220px;
+    background-color: #003366;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    z-index: 10;
+  }
+
+  .sidebar .logo-sidebar {
+    width: 120px;
+    margin-bottom: 30px;
+  }
+
+  .sidebar .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    width: 85%;
+    text-align: center;
+  }
+
+  .sidebar .user-icon {
+    width: 50px;
+    height: auto;
+    border-radius: 50%;
+  }
+
+  .sidebar .logout-btn,
+  .sidebar .history-btn {
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .sidebar .logout-btn {
+    background: #FF4C4C;
+  }
+
+  .sidebar .logout-btn:hover {
+    background: #c0392b;
+  }
+
+  /* ✅ Botón de historial en escritorio: con texto */
+  .sidebar .history-btn {
+    background: #28a745;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .sidebar .history-btn:hover {
+    background: #218838;
+  }
+
+  /* Contenido principal */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .container {
+    background: rgba(73, 99, 160, 0.4);
+    padding: 40px;
+    border-radius: 12px;
+    width: 600px;
+    max-width: 90%;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    text-align: center;
+    margin: 30px auto 0 auto;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .logo {
+    width: 60px;
+    height: auto;
+  }
+
+  h1 {
+    color: #f6f7f8;
+    margin-bottom: 15px;
+  }
+
+  h3 {
+    color: #f2f53e;
+    margin-bottom: 20px;
+  }
+
+  p {
+    color: #f6f7f8;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  select {
+    width: 80%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    margin-bottom: 25px;
+    box-sizing: border-box;
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+
+  .buttons-container button {
+    padding: 15px 25px;
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 10px;
+    flex: 1 1 40%;
+  }
+
+  .buttons-container button:hover {
+    background: #0566ce;
+  }
+
+  footer {
+    width: 100%;
+    text-align: center;
+    color: white;
+    padding: 15px 0;
+    font-size: 14px;
+    margin-top: auto;
+  }
+
+  footer a {
+    color: #66b2ff;
+    text-decoration: none;
+    margin-top: 20px;
+  }
+
+  footer a:hover {
+    text-decoration: underline;
+  }
+
+  /* ✅ Responsivo: diseño tipo app móvil */
+  @media (max-width: 768px) {
+    body {
+      flex-direction: column;
+      padding-top: 60px;
+      box-sizing: border-box;
+    }
+
+    .sidebar {
+      width: 100%;
+      height: 60px;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+      background-color: #003366;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .main-content {
+      width: 100%;
+      padding: 0 15px;
+      box-sizing: border-box;
+    }
+
+    .sidebar .logo-sidebar {
+      width: 80px;
+      margin: 0;
+      order: 1;
+    }
+
+    .sidebar .user-info {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      padding: 0;
+      width: auto;
+      order: 2;
+    }
+
+    /* ✅ Botón de historial en móvil: solo ícono */
+    .sidebar .history-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 22px;
+      width: auto;
+      padding: 0;
+      margin: 0;
+      order: 1;
+      text-indent: -9999px; /* Oculta el texto */
+      position: relative;
+    }
+
+    .sidebar .history-btn::before {
+      content: "📋";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-indent: 0;
+    }
+
+    .sidebar .history-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .sidebar .user-icon {
+      width: 28px;
+      order: 2;
+    }
+
+    /* ✅ Nombre de usuario SIEMPRE visible en móvil */
+    .sidebar #userName {
+      font-size: 13px;
+      font-weight: bold;
+      color: white;
+      display: inline;
+      order: 3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100px;
+    }
+
+    .sidebar .logout-btn {
+      background: #FF4C4C;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      height: 28px;
+      min-width: 60px;
+      order: 4;
+    }
+
+    .sidebar .logout-btn:hover {
+      background: #e03e3e;
+    }
+
+    /* Ajustes para el contenedor principal en móvil */
+    .container {
+      width: 90%;
+      max-width: 500px;
+      padding: 25px 20px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    .header {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 50px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    .buttons-container {
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .buttons-container button {
+      width: 100%;
+      max-width: 300px;
+      padding: 14px;
+      font-size: 16px;
+      margin: 0;
+    }
+
+    p {
+      font-size: 13px;
+      padding: 0 5px;
+    }
+
+    footer {
+      padding: 15px 0;
+      font-size: 13px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Sidebar izquierdo / barra superior en móvil -->
+  <div class="sidebar">
+    <img src="images/logo.png" alt="Logo ENACAL_APP" class="logo-sidebar">
+    <div class="user-info">
+      <img src="images/user.png" alt="Usuario" class="user-icon">
+      <span id="userName">Juan Pérez</span>
+      <button class="logout-btn" onclick="window.location.href='login.html';">Cerrar sesión</button>
+      <button class="history-btn" onclick="window.location.href='resumen.html';">Historial</button>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <div class="container">
+      <div class="header">
+        <img src="images/logo2.png" alt="Logo ENACAL_APP" class="logo">
+        <h1>BIENVENIDO</h1>
+      </div>
+
+      <h3>SELECCIONA EL TIPO DE REPORTE</h3>
+
+      <select id="tipoReporte">
+        <option value="" disabled selected>Selecciona tipo de reporte</option>
+        <option value="agua_potable">Agua Potable</option>
+        <option value="aguas_negras">Aguas Negras</option>
+      </select>
+
+      <p>PARA REALIZAR UN REPORTE DE AVERÍA DE ALCANTARILLADO PÚBLICO, AGUAS NEGRAS Y RED DE SUMINISTRO DE AGUA POTABLE, PUEDES REALIZARLOS POR LAS SIGUIENTES MODALIDADES.</p>
+
+      <div class="buttons-container">
+        <button type="button" id="btnManual">Ingresar Dirección</button>
+        <button type="button" id="btnGPS">Ubicación Actual</button>
+      </div>
+
+      <p>ESTE ES UN SERVICIO AL CLIENTE QUE BRINDA LA EMPRESA NICARAGÜENSE DE ACUEDUCTOS Y ALCANTARILLADO, PARA MEJORAR EL TIEMPO E INCONVENIENTES EN EL SERVICIO DE AGUAS NEGRAS, ALCANTARILLADO PÚBLICO Y SUMINISTRO DE AGUA POTABLE.</p>
+    </div>
+
+    <footer>
+      <p>© Proyecto ENACAL_APP | UNCSM - IS321</p>
+      <p>Diseño de Aplicaciones WEB | Ingeniería en Sistemas de la Información | 2025</p>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        const primerNombre = user.nombre1;
+        const primerApellido = user.apellido1;
+        document.getElementById("userName").innerText = `${primerNombre} ${primerApellido}`;
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+
+  <script>
+    document.getElementById('btnManual').addEventListener('click', function() {
+      const tipo = document.getElementById('tipoReporte').value;
+      if(!tipo){
+        alert('Seleccione un tipo de reporte antes de continuar.');
+        return;
+      }
+      window.location.href = `ingreso_manual.html?tipo=${tipo}`;
+    });
+
+    document.getElementById('btnGPS').addEventListener('click', function() {
+      const tipo = document.getElementById('tipoReporte').value;
+      if(!tipo){
+        alert('Seleccione un tipo de reporte antes de continuar.');
+        return;
+      }
+      window.location.href = `ingreso_gps.html?tipo=${tipo}`;
+    });
+  </script>
+</body>
+</html>
