@@ -96,6 +96,19 @@ app.post('/login', (req, res) => {
   });
 });
 
+// Ruta temporal para recuperar contraseña (solo muestra mensaje)
+app.post('/recuperar-contrasena', (req, res) => {
+  const { emailOrNic } = req.body;
+  
+  // Aquí normalmente enviarías un email con token de restablecimiento
+  console.log(`Solicitud de recuperación para: ${emailOrNic}`);
+  
+  res.json({ 
+    success: true, 
+    message: '✅ Si el correo/NIC existe, recibirás instrucciones por email.' 
+  });
+});
+
 
 
 
@@ -376,6 +389,79 @@ app.get('/api/estadisticas/:id', (req, res) => {
         }
       });
     });
+  });
+});
+
+// Validar usuario para recuperación de contraseña
+app.post('/api/validar-usuario', (req, res) => {
+  const { nicOrEmail, primerNombre, primerApellido } = req.body;
+
+  if (!nicOrEmail || !primerNombre || !primerApellido) {
+    return res.status(400).json({ success: false, message: 'Todos los campos son requeridos' });
+  }
+
+  // Buscar por NIC o Correo
+  const sql = `
+    SELECT id_usuario 
+    FROM usuarios 
+    WHERE (nic = ? OR correo = ?) 
+      AND nombre1 = ? 
+      AND apellido1 = ?
+  `;
+
+  db.query(sql, [nicOrEmail, nicOrEmail, primerNombre, primerApellido], (err, results) => {
+    if (err) {
+      console.error('Error validando usuario:', err);
+      return res.status(500).json({ success: false, message: 'Error en el servidor' });
+    }
+
+    if (results.length > 0) {
+      res.json({ 
+        success: true, 
+        message: 'Usuario validado correctamente',
+        userId: results[0].id_usuario
+      });
+    } else {
+      res.json({ 
+        success: false, 
+        message: 'No se encontró un usuario con esos datos' 
+      });
+    }
+  });
+});
+
+// Actualizar contraseña
+app.post('/api/actualizar-contrasena', (req, res) => {
+  const { userId, newPassword } = req.body;
+
+  if (!userId || !newPassword) {
+    return res.status(400).json({ success: false, message: 'Datos incompletos' });
+  }
+
+  // Validar que userId sea un número
+  if (!/^\d+$/.test(userId)) {
+    return res.status(400).json({ success: false, message: 'ID de usuario inválido' });
+  }
+
+  const sql = 'UPDATE usuarios SET contrasena = ? WHERE id_usuario = ?';
+  
+  db.query(sql, [newPassword, userId], (err, result) => {
+    if (err) {
+      console.error('Error actualizando contraseña:', err);
+      return res.status(500).json({ success: false, message: 'Error al actualizar contraseña' });
+    }
+
+    if (result.affectedRows > 0) {
+      res.json({ 
+        success: true, 
+        message: 'Contraseña actualizada con éxito' 
+      });
+    } else {
+      res.json({ 
+        success: false, 
+        message: 'No se pudo actualizar la contraseña' 
+      });
+    }
   });
 });
 
